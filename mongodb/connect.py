@@ -17,3 +17,4 @@ except Exception as e:
     print("FAILED! Could not connect to MongoDB")
     print(f"Error: {e}")
     print("\n Make sure you started mongodb on docker!")
+    print("\ndocker start neo4j")
