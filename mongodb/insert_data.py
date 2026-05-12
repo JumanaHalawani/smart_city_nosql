@@ -4,6 +4,16 @@ from datetime import datetime
 client = MongoClient("mongodb://localhost:27017")
 db = client.smart_city
 
+db.reports.delete_many({})
+db.citizens.delete_many({})
+db.departments.delete_many({})
+db.locations.delete_many({})
+
+db.reports.create_index("report_id", unique=True)
+db.citizens.create_index("citizen_id", unique=True)
+db.departments.create_index("department_id", unique=True)
+db.locations.create_index("location_id", unique=True)
+
 db.citizens.insert_many([{"citizen_id":"CIT-001", "name":"Ahmed Ahmed", "email":"ahmed@gmail.com","phone":"0598800000", "district":"Ein Sarah","created_at":datetime.now()},
                          {"citizen_id":"CIT-002", "name":"Fatima Al-Zahra", "email":"fatima@gmail.com","phone":"0591110000", "district":"Downtown","created_at":datetime.now()},
                          {"citizen_id":"CIT-003", "name":"Omar Omar", "email":"omar@gmail.com","phone":"0528800000", "district":"Wad El Haryeh","created_at":datetime.now()}
