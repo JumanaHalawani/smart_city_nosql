@@ -8,7 +8,7 @@ print("=" * 40)
 # Neo4j connection details
 URI = "bolt://localhost:7687"
 USER = "neo4j"
-PASSWORD = "password"
+PASSWORD = "12345678"
 
 try:
     driver = GraphDatabase.driver(URI, auth=(USER, PASSWORD))
