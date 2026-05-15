@@ -13,39 +13,40 @@ print("=" * 30)
 all_reports = db.reports.find()
 for report in all_reports:
     print(f"Report ID: {report['report_id']}")
-    print(f"   Issue Type: {report['issue_type']}")
+    print(f"   Issue Type: {report['type']}")
     print(f"   Status: {report['status']}")
-    print(f"   Citizen ID: {report['citizen_id']}")
+    print(f"   Citizen ID: {report['user_id']}")
     print("-" * 30)
 
 print("\n" + "=" * 30)
 print("   WASTE REPORTS ONLY")
 print("=" * 30)
-wast_reports=db.reports.find({"issue_type": "waste"})
-for report in wast_reports :
+
+waste_reports = db.reports.find({"type": "waste"})
+for report in waste_reports:
     print(f"Report ID: {report['report_id']}")
     print(f"   Status: {report['status']}")
-    print(f"   Citizen ID: {report['citizen_id']}")
+    print(f"   Citizen ID: {report['user_id']}")
     print("-" * 30)
 
 print("\n" + "=" * 30)
 print("   TRAFFIC REPORTS ONLY")
 print("=" * 30)
-wast_reports=db.reports.find({"issue_type": "traffic"})
-for report in wast_reports :
+traffic_reports = db.reports.find({"type": "traffic"})
+for report in traffic_reports:
     print(f"Report ID: {report['report_id']}")
     print(f"   Status: {report['status']}")
-    print(f"   Citizen ID: {report['citizen_id']}")
+    print(f"   Citizen ID: {report['user_id']}")
     print("-" * 30)
 
 print("\n" + "=" * 30)
-print("   LIGHTING REPORTS ONLY")
+print("   ELECTRICITY REPORTS ONLY")
 print("=" * 30)
-wast_reports=db.reports.find({"issue_type": "lighting"})
-for report in wast_reports :
+electricity_reports = db.reports.find({"type": "electricity"})
+for report in electricity_reports:
     print(f"Report ID: {report['report_id']}")
     print(f"   Status: {report['status']}")
-    print(f"   Citizen ID: {report['citizen_id']}")
+    print(f"   Citizen ID: {report['user_id']}")
     print("-" * 30)
 
 # now an Update query :
@@ -53,14 +54,14 @@ print("\n" + "=" * 30)
 print("   UPDATE REPORT STATUS")
 print("=" * 30)
 print("BEFORE UPDATE:")
-report_before = db.reports.find_one({"report_id": "REP-001"})
+report_before = db.reports.find_one({"report_id": "R001"})
 print(f"Report ID: {report_before['report_id']} - Status: {report_before['status']}")
 db.reports.update_one(
-    {"report_id": "REP-001"},
+    {"report_id": "R001"},
     {"$set": {"status": "resolved"}}
 )
 print("\nAFTER UPDATE:")
-report_after = db.reports.find_one({"report_id": "REP-001"})
+report_after = db.reports.find_one({"report_id": "R001"})
 print(f"Report ID: {report_after['report_id']} - Status: {report_after['status']}")
 
 # now a Delete query :
@@ -72,9 +73,9 @@ print("=" * 30)
 all_reports = db.reports.find()
 for report in all_reports:
     print(f"Report ID: {report['report_id']}")
-    print(f"   Issue Type: {report['issue_type']}")
+    print(f"   Issue Type: {report['type']}")
     print(f"   Status: {report['status']}")
-    print(f"   Citizen ID: {report['citizen_id']}")
+    print(f"   Citizen ID: {report['user_id']}")
     print("-" * 30)
 
 # A Complex query :
@@ -82,7 +83,9 @@ for report in all_reports:
 print("\n" + "=" * 30)
 print("   COUNT BY ISSUE TYPE")
 print("=" * 30)
-pipeline = [ {"$group": {"_id": "$issue_type", "count": {"$sum": 1}}}]
+pipeline = [{"$group": {"_id": "$type", "count": {"$sum": 1}}}]
 results = db.reports.aggregate(pipeline)
 for item in results:
     print(f"   {item['_id']}: {item['count']} report(s)")
+
+ 
