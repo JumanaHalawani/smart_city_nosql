@@ -7,9 +7,9 @@ print("=" * 40)
 
 # InfluxDB connection details
 URL = "http://localhost:8086"
-TOKEN = "my-super-secret-token"
-ORG = "my-org"
-BUCKET = "smart_city"
+TOKEN = "h25ii5peBP4ESZkeKu03iMhr2ZdmZ2GuDAb8Z4eAR7Q91A_n3FPOAAxq1GAzqy1SZwvE_nShAyUZZo0TJGbciA=="
+ORG = "smart_city"
+BUCKET = "Smart_City_Bucket"
 
 try:
     client = InfluxDBClient(url=URL, token=TOKEN, org=ORG)
