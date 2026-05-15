@@ -1,68 +1,84 @@
+
+import pandas as pd
 from neo4j import GraphDatabase
 
-# Connection info
-URI = "bolt://localhost:7687"
-USER = "neo4j"
-PASSWORD = "12345678"
+uri = "bolt://localhost:7687"
+username = "neo4j"
+password = "12345678"
 
-# Create driver
-driver = GraphDatabase.driver(
-    URI,
-    auth=(USER, PASSWORD)
-)
 
-# Function that inserts graph data
-def create_data(tx):
+driver = GraphDatabase.driver(uri, auth=(username, password))
 
-    tx.run("""
+users = pd.read_csv("../data/users.csv")
+departments = pd.read_csv("../data/departments.csv")
+reports = pd.read_csv("../data/reports.csv")
 
-        CREATE (u1:User {
-            name: 'Ahmad'
-        })
-
-        CREATE (u2:User {
-            name: 'Sara'
-        })
-
-        CREATE (r1:Report {
-            type: 'waste',
-            area: 'Ramallah',
-            status: 'pending'
-        })
-
-        CREATE (r2:Report {
-            type: 'traffic',
-            area: 'Nablus',
-            status: 'resolved'
-        })
-
-        CREATE (d1:Department {
-            name: 'Waste Department',
-            type: 'waste',
-            area: 'Ramallah'
-        })
-
-        CREATE (d2:Department {
-            name: 'Traffic Department',
-            type: 'traffic',
-            area: 'Nablus'
-        })
-
-        CREATE (u1)-[:REPORTS]->(r1)
-        CREATE (u2)-[:REPORTS]->(r2)
-
-        CREATE (d1)-[:HANDLES]->(r1)
-        CREATE (d2)-[:HANDLES]->(r2)
-
-    """)
-
-# Open session
 with driver.session() as session:
 
-    # Execute function
-    session.execute_write(create_data)
+    for _, row in users.iterrows():
+        session.run(
+            """
+            CREATE (:User {
+                user_id: $user_id,
+                username: $username
+            })
+            """,
+            user_id=row["user_id"],
+            username=row["username"]
+        )
 
-print("Data inserted successfully!")
+    for _, row in departments.iterrows():
+        session.run(
+            """
+            CREATE (:Department {
+                dep_id: $dep_id,
+                name: $name,
+                type: $type,
+                area: $area
+            })
+            """,
+            dep_id=row["dep_id"],
+            name=row["name"],
+            type=row["type"],
+            area=row["area"]
+        )
 
-# Close connection
-driver.close()
+    for _, row in reports.iterrows():
+        session.run(
+            """
+            CREATE (r:Report {
+                report_id: $report_id,
+                type: $type,
+                area: $area,
+                status: $status,
+                response_time: $response_time
+            })
+            """,
+            report_id=row["report_id"],
+            type=row["type"],
+            area=row["area"],
+            status=row["status"],
+            response_time=row["response_time"]
+        )
+
+        session.run(
+            """
+            MATCH (u:User {user_id: $user_id})
+            MATCH (r:Report {report_id: $report_id})
+            CREATE (u)-[:REPORTED]->(r)
+            """,
+            user_id=row["user_id"],
+            report_id=row["report_id"]
+        )
+
+        session.run(
+            """
+            MATCH (d:Department {dep_id: $dep_id})
+            MATCH (r:Report {report_id: $report_id})
+            CREATE (d)-[:HANDLES]->(r)
+            """,
+            dep_id=row["department_id"],
+            report_id=row["report_id"]
+        )
+
+print("Neo4j data inserted")
