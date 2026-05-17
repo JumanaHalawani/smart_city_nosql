@@ -3,6 +3,26 @@ from pymongo import MongoClient
 client = MongoClient("mongodb://localhost:27017")
 db = client.smart_city
 
+# functions for the backened to import 
+def get_all_reports(db):
+    all_reports = db.reports.find({}, {"_id": 0})
+    return list(all_reports)
+def get_reports_by_type(db, report_type):
+    filtered_reports = db.reports.find({"type": report_type}, {"_id": 0})
+    return list(filtered_reports)
+def update_report_status(db, report_id, new_status):
+    result = db.reports.update_one(
+        {"report_id": report_id},
+        {"$set": {"status": new_status}}
+    )
+    return result.modified_count
+def delete_reports_by_status(db, status):
+    result = db.reports.delete_many({"status": status})
+    return result.deleted_count
+def count_reports_by_type(db):
+    pipeline = [{"$group": {"_id": "$type", "count": {"$sum": 1}}}]
+    results = db.reports.aggregate(pipeline)
+    return list(results) 
 # CRUD queries 
 # already did the create thing in insert_data.py 
 # now Read queries :
